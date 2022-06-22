@@ -14,6 +14,7 @@ export default class EventManager extends LightningElement {
         // Register listener
         this.handleRenewSubscribe();
         this.handleCancelSubscribe();
+        this.handleAmendSubscribe();
     }
 
     handleCancelSubscribe() {
@@ -72,6 +73,34 @@ export default class EventManager extends LightningElement {
         subscribe(this.renewChannel, -1, messageCallback).then(response => {
             // Response contains the subscription information on renew call
             this.renewSubscription = response;
+        });
+    }
+
+    handleAmendSubscribe() {
+        const thisReference = this;
+        const messageCallback = function(response) {
+            let obj = JSON.parse(JSON.stringify(response));
+            let message = 'Order created: ' + obj.data.payload.AmendmentRecordId;
+
+            let variant = 'success'
+            if (obj.data.payload.AssetAmendErrorDetailEvents != null) {
+                message = 'Couldn’t cancel the asset: ' + obj.data.payload.AssetAmendErrorDetailEvents[0].ErrorMessage;
+                variant = 'error'
+            }
+            const evt = new ShowToastEvent({
+                message: message,
+                variant: variant,
+                mode : "sticky"
+            });
+
+            thisReference.dispatchEvent(evt);
+            // Response contains the payload of the new message received
+        };
+
+        // Invoke subscribe method of empApi. Pass reference to messageCallback
+        subscribe(this.amendChannel, -1, messageCallback).then(response => {
+            // Response contains the subscription information on cancel call
+            this.amendSubscription = response;
         });
     }
 }
