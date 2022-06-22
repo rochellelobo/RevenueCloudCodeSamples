@@ -43,4 +43,13 @@ public with sharing class AssetManagementController {
         }
         return responseList;
     }
+
+    @AuraEnabled
+    public static List<String> amendAsset(List<Asset> assetList, Datetime amendDate, double quantity) {
+        List<String> responseList = new List<String>();
+        ConnectApi.RevenueAsyncRepresentation output;
+        for(Asset asset : assetList) {
+            List<String> idList = new List<String>();
+            ConnectApi.Asset
+    }
 }
